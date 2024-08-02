@@ -1,4 +1,5 @@
 import discord
+import os
 import json
 
 from typing import Optional
@@ -6,9 +7,18 @@ from discord import app_commands
 from discord.ui import Select,View
 from discord.app_commands import Choice
 
+json_file_path = os.path.join(os.path.dirname(__file__), '../data/data.json')
+
+def read_json():
+    with open(json_file_path, 'r') as f:
+        data = json.load(f)
+        return data
+
+def write_json(data):
+    with open(json_file_path, 'w') as f:
+        json.dump(data, f)
 
 def register(bot):
-    
     # 新增
     @bot.tree.command(name="addchoice", description="新增志願表")
     @app_commands.describe(from_name="要新增的志願表名稱", option="總共志願數量", num="一個可以選多少志願")
@@ -19,20 +29,28 @@ def register(bot):
         temp["option"] = option
         temp["num"] = num
         temp["values"] = []
+        temp["people"] = {}
 
-        with open(r"C:\Users\yoyok\Documents\code\discordbot\choice\data.json", 'r') as f:
-            data = json.load(f)
+        # 延遲回應
+        await interaction.response.defer(thinking=True)
+        values = []
+        for i in range(num):
+            await interaction.followup.send(f"請輸入第 {i+1} 個選項名稱：")
+            response = await bot.wait_for("message", check=lambda m: m.author == interaction.user)
+            values.append(response.content) 
+        temp["values"] = values
+        
+        data = read_json()
         data[from_name] = temp
-        with open(r"C:\Users\yoyok\Documents\code\discordbot\choice\data.json", 'w') as f:
-            json.dump(data, f)
-        response = await interaction.channel.send("設定完成，請打 /publishchoice 發布")
+        write_json(data)
+        
+        await interaction.followup.send(f"`{from_name}` 設定完成，請打 /publishchoice 發布")
 
     # 發布
     @bot.tree.command(name="publishchoice", description="發布志願表")
     @app_commands.describe(from_name="要發布的志願表名稱")
     async def publishchoice(interaction: discord.Interaction, from_name:str):
-        with open(r"C:\Users\yoyok\Documents\code\discordbot\choice\data.json", 'r') as f:
-            data = json.load(f)
+        data = read_json()
         choice = data[from_name]["values"]
         num = data[from_name]["num"]
         str1 = ""
@@ -46,8 +64,7 @@ def register(bot):
     @bot.tree.command(name="mychoice", description="填寫志願表")
     @app_commands.describe(from_name="要填寫的志願表名稱")
     async def mychoice(interaction: discord.Interaction, from_name:str):
-        with open(r"C:\Users\yoyok\Documents\code\discordbot\choice\data.json", 'r') as f:
-            data = json.load(f)
+        data = read_json()
         nowoption=[]
         for i in data[from_name]["values"]:
             nowoption.append(discord.SelectOption(label=i , value=i))
@@ -60,10 +77,10 @@ def register(bot):
         view = View()
         view.add_item(select)
         await interaction.channel.send(view = view)
-            
-        # data[from_name][interaction.user.name]=your_values
-        with open(r"C:\Users\yoyok\Documents\code\discordbot\choice\data.json", 'w') as f:
-            json.dump(data, f)
+        
+        data[from_name]["people"][interaction.user.name:select.values] = select.values
+
+        write_json(data)
         await interaction.response.send_message(f"你正在填寫 `{from_name}`，請依順序填入你的志願")
 
     
