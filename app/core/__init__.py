@@ -1,8 +1,8 @@
 class Choice():
-    def __init__(self,founder, option_num, num):
+    def __init__(self,founder, option_num, max_num):
         self.founder = founder
         self.option_num = option_num
-        self.num = num
+        self.max_num = max_num
         self.option_name = []
         self.people = {}
         self.result = []

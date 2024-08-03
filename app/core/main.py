@@ -4,7 +4,8 @@ import json
 from discord import app_commands
 from discord.ui import Select,View
 
-from core.__init__ import Choice  
+from core.__init__ import Choice
+from core.sort import sort_choices
 
 json_file_path = os.path.join(os.path.dirname(__file__), '../data/data.json')
 
@@ -20,11 +21,14 @@ def write_json(data):
 
 
 def register(bot):
+    
+    
+
     # 新增
     @bot.tree.command(name="add", description="新增志願表")
-    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", num="一個可以選多少志願")
-    async def add(interaction: discord.Interaction, from_name: str, option_num: int, num: int):
-        new = Choice(interaction.user.name,option_num,num)
+    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", max_num="一個可以選多少志願")
+    async def add(interaction: discord.Interaction, from_name: str, option_num: int, max_num: int):
+        new = Choice(interaction.user.name,option_num,max_num)
 
         option_name = {}
         await interaction.response.defer(thinking=True)
@@ -43,6 +47,7 @@ def register(bot):
         response = await interaction.channel.send(f" `{from_name}` 設定完成， /publishchoice 發布")
 
 
+
     # 發布
     @bot.tree.command(name="publish", description="發布志願表")
     @app_commands.describe(from_name="要發布的志願表名稱")
@@ -55,8 +60,9 @@ def register(bot):
         str1 = ""
         for key in choice:
             str1 += (f"\n- {key }: {choice[key]}人")
-        num = data[from_name]["num"]
-        await interaction.response.send_message(f"`{from_name}`志願表已發布 分別需要: {str1} \n一人請選 `{num}` 個志願")
+        max_num = data[from_name]["max_num"]
+        await interaction.response.send_message(f"`{from_name}`志願表已發布 分別需要: {str1} \n一人請選 `{max_num}` 個志願")
+    
     
     
     #選志願
@@ -72,7 +78,7 @@ def register(bot):
         for i in data[from_name]["option_name"]:
             user_option_num.append(discord.Selectoption_num(label=i, value=i))
     
-        select = Select(option_nums=user_option_num, max_option_name=data[from_name]["num"])
+        select = Select(option_nums=user_option_num, max_option_name=data[from_name]["max_num"])
 
         async def select_callback(interaction: discord.Interaction):
             data[from_name]["people"][interaction.user.name] = select.option_name
@@ -85,15 +91,20 @@ def register(bot):
         view.add_item(select)
         await interaction.channel.send(f"填寫 `{from_name}`中...，請依順序填入你的志願 (注意:畫面上的排序不是您點的順序)", view=view)
 
-    #選志願
+
+
+    #排志願
     @bot.tree.command(name="sort", description="排序志願表")
     @app_commands.describe(from_name="要排序的志願表名稱")
-    async def fillout(interaction: discord.Interaction, from_name: str):
+    async def sort(interaction: discord.Interaction, from_name: str):
         data = read_json()
         
         if from_name not in data:
             await interaction.response.send_message(f"志願表名稱 `{from_name}` 不存在。請確認名稱是否正確。", ephemeral=True)
             
+        result = sort_choices(data, from_name)
+        data[from_name]["result"] = result
         
+        write_json(data)
         
-        await interaction.channel.send("排序中...")
+        await interaction.response.send_message(f"`{from_name}` 排序完成 結果如下: {result}")
