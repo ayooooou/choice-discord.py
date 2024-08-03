@@ -1,1 +1,47 @@
-{"123": {"founder": "a.uuu", "option": 3, "num": 2, "values": []}, "test1": {"founder": "a.uuu", "num": 2, "values": ["1", "2", "3"]}, "test2": {"founder": "a.uuu", "option": 3, "num": 2, "values": [], "people": {}}, "2": {"founder": "a.uuu", "option": 3, "num": 2, "values": ["D", "L"], "people": {}}}
+{
+  "fds": {
+    "founder": "a.uuu",
+    "option_num": 3,
+    "num": 2,
+    "option_name": {
+      "總務": "2",
+      "星星": "3"
+    },
+    "people": {
+      "a.uuu": [
+        "總務",
+        "星星"
+      ]
+    },
+    "result": [
+      "a.uuu",
+      "a.uuu"
+    ]
+  },
+  "asdfd": {
+    "總務": "3"
+  },
+  "asfd": {
+    "founder": "a.uuu",
+    "option_num": 3,
+    "num": 2,
+    "option_name": {
+      "總務": "1",
+      "美宣": "1"
+    },
+    "people": {},
+    "result": []
+  },
+  "dfgh": {
+    "founder": "a.uuu",
+    "option_num": 3,
+    "num": 2,
+    "option_name": {
+      "總務": "2",
+      "福倒": "4",
+      "美宣": "3"
+    },
+    "people": {},
+    "result": []
+  }
+}

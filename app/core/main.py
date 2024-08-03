@@ -1,86 +1,99 @@
 import discord
 import os
 import json
-
-from typing import Optional
 from discord import app_commands
 from discord.ui import Select,View
-from discord.app_commands import Choice
+
+from core.__init__ import Choice  
 
 json_file_path = os.path.join(os.path.dirname(__file__), '../data/data.json')
 
 def read_json():
-    with open(json_file_path, 'r') as f:
+    with open(json_file_path, 'r',encoding='utf-8') as f:
         data = json.load(f)
         return data
 
 def write_json(data):
-    with open(json_file_path, 'w') as f:
+    with open(json_file_path, 'w',encoding='utf-8') as f:
         json.dump(data, f)
+
+
 
 def register(bot):
     # 新增
-    @bot.tree.command(name="addchoice", description="新增志願表")
-    @app_commands.describe(from_name="要新增的志願表名稱", option="總共志願數量", num="一個可以選多少志願")
-    async def addchoice(interaction: discord.Interaction, from_name: str, option: int, num: int):
-        founder = interaction.user.name
-        temp = {}
-        temp["founder"] = founder
-        temp["option"] = option
-        temp["num"] = num
-        temp["values"] = []
-        temp["people"] = {}
+    @bot.tree.command(name="add", description="新增志願表")
+    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", num="一個可以選多少志願")
+    async def add(interaction: discord.Interaction, from_name: str, option_num: int, num: int):
+        new = Choice(interaction.user.name,option_num,num)
 
-        # 延遲回應
+        option_name = {}
         await interaction.response.defer(thinking=True)
-        values = []
-        for i in range(num):
-            await interaction.followup.send(f"請輸入第 {i+1} 個選項名稱：")
-            response = await bot.wait_for("message", check=lambda m: m.author == interaction.user)
-            values.append(response.content) 
-        temp["values"] = values
+        await interaction.channel.send(f"<@{interaction.user.id}> 建立了 `{from_name}`，要提供 `{option_num}` 個選項及需要人數")
+        for i in range(option_num):
+            # 等待用戶輸入值
+            await interaction.channel.send(f"請輸入第 {i+1} 個選項及需要的人數 (例 總務:2)：")
+            response = await bot.wait_for("message", check=lambda m: m.author == interaction.user,timeout=180.0)
+            response=response.content.split(":")
+            option_name[response[0]]=response[1]
+        new.option_name = option_name
         
         data = read_json()
-        data[from_name] = temp
+        data[from_name] = new.to_dict()
         write_json(data)
-        
-        await interaction.followup.send(f"`{from_name}` 設定完成，請打 /publishchoice 發布")
+        response = await interaction.channel.send(f" `{from_name}` 設定完成， /publishchoice 發布")
+
 
     # 發布
-    @bot.tree.command(name="publishchoice", description="發布志願表")
+    @bot.tree.command(name="publish", description="發布志願表")
     @app_commands.describe(from_name="要發布的志願表名稱")
-    async def publishchoice(interaction: discord.Interaction, from_name:str):
+    async def publish(interaction: discord.Interaction, from_name:str):
         data = read_json()
-        choice = data[from_name]["values"]
-        num = data[from_name]["num"]
+        if from_name not in data:
+            await interaction.response.send_message(f"志願表 `{from_name}` 不存在", ephemeral=True)
+        
+        choice = data[from_name]["option_name"]
         str1 = ""
-        for i in choice:
-            str1 += i
-            str1 += ", "
-        await interaction.response.send_message(f"`{from_name}`志願表已可填寫 志願分別有 `{str1}`，一人請選 `{num}` 個志願")
+        for key in choice:
+            str1 += (f"\n- {key }: {choice[key]}人")
+        num = data[from_name]["num"]
+        await interaction.response.send_message(f"`{from_name}`志願表已發布 分別需要: {str1} \n一人請選 `{num}` 個志願")
     
     
     #選志願
-    @bot.tree.command(name="mychoice", description="填寫志願表")
+    @bot.tree.command(name="fillout", description="填寫志願表")
     @app_commands.describe(from_name="要填寫的志願表名稱")
-    async def mychoice(interaction: discord.Interaction, from_name:str):
+    async def fillout(interaction: discord.Interaction, from_name: str):
         data = read_json()
-        nowoption=[]
-        for i in data[from_name]["values"]:
-            nowoption.append(discord.SelectOption(label=i , value=i))
         
-        select=Select(options=nowoption,max_values=data[from_name]["num"])
+        if from_name not in data:
+            await interaction.response.send_message(f"志願表`{from_name}` 不存在", ephemeral=True)
+            
+        user_option_num = []
+        for i in data[from_name]["option_name"]:
+            user_option_num.append(discord.Selectoption_num(label=i, value=i))
+    
+        select = Select(option_nums=user_option_num, max_option_name=data[from_name]["num"])
+
         async def select_callback(interaction: discord.Interaction):
-            await interaction.response.send_message(f"{select.values}")
+            data[from_name]["people"][interaction.user.name] = select.option_name
+            write_json(data)
+            choices = "\n".join([f"第{i+1}志願 {choice}" for i, choice in enumerate(select.option_name)])
+            await interaction.response.send_message(f"完成填寫 (請注意志願排序是否正確) \n\n{choices}")
     
         select.callback = select_callback
         view = View()
         view.add_item(select)
-        await interaction.channel.send(view = view)
+        await interaction.channel.send(f"填寫 `{from_name}`中...，請依順序填入你的志願 (注意:畫面上的排序不是您點的順序)", view=view)
+
+    #選志願
+    @bot.tree.command(name="sort", description="排序志願表")
+    @app_commands.describe(from_name="要排序的志願表名稱")
+    async def fillout(interaction: discord.Interaction, from_name: str):
+        data = read_json()
         
-        data[from_name]["people"][interaction.user.name:select.values] = select.values
-
-        write_json(data)
-        await interaction.response.send_message(f"你正在填寫 `{from_name}`，請依順序填入你的志願")
-
-    
+        if from_name not in data:
+            await interaction.response.send_message(f"志願表名稱 `{from_name}` 不存在。請確認名稱是否正確。", ephemeral=True)
+            
+        
+        
+        await interaction.channel.send("排序中...")
