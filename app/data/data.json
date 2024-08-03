@@ -27,38 +27,107 @@
     "option_num": 3,
     "max_num": 2,
     "option_name": {
-      "A": "1",
-      "B": "2",
-      "C": "1"
+      "A": 2,
+      "B": 1,
+      "C": 3,
+      "D": 2,
+      "E": 1
     },
     "people": {
       "Alice": [
         "A",
         "B",
-        "C"
+        "C",
+        "D",
+        "E"
       ],
       "Bob": [
         "C",
         "A",
-        "B"
+        "B",
+        "E",
+        "D"
       ],
       "Charlie": [
         "B",
         "C",
+        "A",
+        "D",
+        "E"
+      ],
+      "David": [
+        "D",
+        "E",
+        "C",
+        "A",
+        "B"
+      ],
+      "Eve": [
+        "E",
+        "D",
+        "B",
+        "C",
         "A"
+      ],
+      "Frank": [
+        "A",
+        "C",
+        "E",
+        "B",
+        "D"
+      ],
+      "Grace": [
+        "C",
+        "D",
+        "A",
+        "B",
+        "E"
+      ],
+      "Heidi": [
+        "B",
+        "A",
+        "D",
+        "E",
+        "C"
       ]
     },
     "result": {
       "A": [
+        "Frank",
         "Alice"
       ],
       "B": [
-        "Charlie",
-        "Alice"
+        "Heidi"
       ],
       "C": [
-        "Bob"
+        "Bob",
+        "Grace",
+        "Charlie"
+      ],
+      "D": [
+        "David",
+        "Grace"
+      ],
+      "E": [
+        "Eve"
       ]
     }
+  },
+  "test1": {
+    "founder": "a.uuu",
+    "option_num": 3,
+    "max_num": 2,
+    "option_name": {
+      "總務": "2",
+      "美宣": "4",
+      "隊輔": "2"
+    },
+    "people": {
+      "a.uuu": [
+        "美宣",
+        "隊輔"
+      ]
+    },
+    "result": []
   }
 }

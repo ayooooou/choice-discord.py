@@ -5,7 +5,6 @@ def sort_choices(data, from_name):
     last_round_fail = []  
     for round in range(data[from_name]["max_num"]):  # 第i輪
         people_names = list(data[from_name]["people"].keys())
-        print(people_names)
         random.shuffle(people_names) # 隨機
         
         # 上一輪沒選到的人優先

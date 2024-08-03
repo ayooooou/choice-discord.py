@@ -26,7 +26,7 @@ def register(bot):
 
     # 新增
     @bot.tree.command(name="add", description="新增志願表")
-    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", max_num="一個可以選多少志願")
+    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", max_num="一個人至少選多少志願")
     async def add(interaction: discord.Interaction, from_name: str, option_num: int, max_num: int):
         new = Choice(interaction.user.name,option_num,max_num)
 
@@ -76,14 +76,14 @@ def register(bot):
             
         user_option_num = []
         for i in data[from_name]["option_name"]:
-            user_option_num.append(discord.Selectoption_num(label=i, value=i))
+            user_option_num.append(discord.SelectOption(label=i, value=i))
     
-        select = Select(option_nums=user_option_num, max_option_name=data[from_name]["max_num"])
+        select = Select(options=user_option_num, max_values=data[from_name]["max_num"])
 
         async def select_callback(interaction: discord.Interaction):
-            data[from_name]["people"][interaction.user.name] = select.option_name
+            data[from_name]["people"][interaction.user.name] = select.values
             write_json(data)
-            choices = "\n".join([f"第{i+1}志願 {choice}" for i, choice in enumerate(select.option_name)])
+            choices = "\n".join([f"第{i+1}志願 {choice}" for i, choice in enumerate(select.values)])
             await interaction.response.send_message(f"完成填寫 (請注意志願排序是否正確) \n\n{choices}")
     
         select.callback = select_callback
@@ -106,5 +106,7 @@ def register(bot):
         data[from_name]["result"] = result
         
         write_json(data)
-        
-        await interaction.response.send_message(f"`{from_name}` 排序完成 結果如下: {result}")
+        result_str=""
+        for str1 in result:
+            result_str += f"\n- {str1} : {', '.join(result[str1])}"
+        await interaction.response.send_message(f"`{from_name}` 排序完成 結果如下: {result_str}")
