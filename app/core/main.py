@@ -26,7 +26,7 @@ def register(bot):
 
     # 新增
     @bot.tree.command(name="add", description="新增志願表")
-    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", max_num="一個人至少選多少志願")
+    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", max_num="一個人最多幾個工作")
     async def add(interaction: discord.Interaction, from_name: str, option_num: int, max_num: int):
         new = Choice(interaction.user.name,option_num,max_num)
 
@@ -60,8 +60,7 @@ def register(bot):
         str1 = ""
         for key in choice:
             str1 += (f"\n- {key }: {choice[key]}人")
-        max_num = data[from_name]["max_num"]
-        await interaction.response.send_message(f"`{from_name}`志願表已發布 分別需要: {str1} \n一人請選 `{max_num}` 個志願")
+        await interaction.response.send_message(f"`{from_name}`志願表已發布 分別需要: {str1} \n/fillout {from_name} 進行填寫志願表")
     
     
     
@@ -78,7 +77,7 @@ def register(bot):
         for i in data[from_name]["option_name"]:
             user_option_num.append(discord.SelectOption(label=i, value=i))
     
-        select = Select(options=user_option_num, max_values=data[from_name]["max_num"])
+        select = Select(options=user_option_num, max_values=data[from_name]["option_num"], placeholder="請選擇志願")
 
         async def select_callback(interaction: discord.Interaction):
             data[from_name]["people"][interaction.user.name] = select.values

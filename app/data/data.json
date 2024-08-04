@@ -24,7 +24,7 @@
   },
   "example": {
     "num": 3,
-    "option_num": 3,
+    "option_num": 5,
     "max_num": 2,
     "option_name": {
       "A": 2,
@@ -38,71 +38,67 @@
         "A",
         "B",
         "C",
-        "D",
-        "E"
+        "D"
       ],
       "Bob": [
-        "C",
         "A",
+        "C",
         "B",
-        "E",
-        "D"
+        "E"
       ],
       "Charlie": [
         "B",
         "C",
         "A",
-        "D",
-        "E"
+        "D"
       ],
       "David": [
         "D",
         "E",
         "C",
-        "A",
-        "B"
+        "A"
       ],
       "Eve": [
         "E",
         "D",
         "B",
-        "C",
-        "A"
+        "C"
       ],
       "Frank": [
         "A",
         "C",
         "E",
-        "B",
-        "D"
+        "B"
       ],
       "Grace": [
         "C",
         "D",
-        "A",
-        "B",
-        "E"
+        "A"
       ],
       "Heidi": [
         "B",
         "A",
         "D",
-        "E",
-        "C"
+        "E"
+      ],
+      "a.uuu": [
+        "C",
+        "D",
+        "E"
       ]
     },
     "result": {
       "A": [
-        "Frank",
-        "Alice"
+        "Bob",
+        "Frank"
       ],
       "B": [
-        "Heidi"
+        "Charlie"
       ],
       "C": [
-        "Bob",
         "Grace",
-        "Charlie"
+        "Frank",
+        "Bob"
       ],
       "D": [
         "David",

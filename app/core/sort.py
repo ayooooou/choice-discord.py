@@ -1,9 +1,9 @@
 import random
 
 def sort_choices(data, from_name):
-    work_lists = {work_name: [] for work_name in data[from_name]["option_name"]}  # 工作列表的字典
+    work_lists = {work_name: [] for work_name in data[from_name]["option_name"]}  # 工作名稱列表
     last_round_fail = []  
-    for round in range(data[from_name]["max_num"]):  # 第i輪
+    for round in range(data[from_name]["option_num"]):  # 第i輪
         people_names = list(data[from_name]["people"].keys())
         random.shuffle(people_names) # 隨機
         
