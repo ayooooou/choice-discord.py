@@ -26,9 +26,9 @@ def register(bot):
 
     # 新增
     @bot.tree.command(name="add", description="新增志願表")
-    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量", max_num="一個人最多幾個工作")
-    async def add(interaction: discord.Interaction, from_name: str, option_num: int, max_num: int):
-        new = Choice(interaction.user.name,option_num,max_num)
+    @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量")
+    async def add(interaction: discord.Interaction, from_name: str, option_num: int):
+        new = Choice(interaction.user.name,option_num)
 
         option_name = {}
         await interaction.response.defer(thinking=True)
