@@ -9,8 +9,6 @@ def sort_choices(data, from_name):
     total_worker_num = len(data[from_name]["people"])
     round_num = (total_work_num // total_worker_num) + 1
     
-    over = False
-    
     for i in range(round_num):  #每個人第i個工作
         people_names = list(data[from_name]["people"].keys())
         random.shuffle(people_names) # 隨機
@@ -21,18 +19,19 @@ def sort_choices(data, from_name):
             #while need == have:
             while int(data[from_name]["option_name"][choice_work_name]) == len(work_lists[choice_work_name]):
                 worker_dict[name] += 1
-                #他排了幾個志願                             @現在在他的第幾個志願
+                
+                #if 他總共排了幾個志願 < 現在在他的第幾個志願 : 
                 if len(data[from_name]["people"][name]) < worker_dict[name] + 1 :
-                    over = True
                     break
+                
                 choice_work_name = data[from_name]["people"][name][ worker_dict[name] ]
+            else:
+                work_lists[choice_work_name].append(name)  
+                worker_dict[name] += 1
+                continue
             
-            if over:
-                break
+            break
             
-            work_lists[choice_work_name].append(name)  
-            worker_dict[name] += 1
-    
     return work_lists
 
        

@@ -18,8 +18,7 @@
 
 
 <details>
-<summary> 版本一 </summary>
-<br>
+<summary> 嘗試階段 </summary>
 
 ### 朋友告訴我就`一輪一輪看，如果前一輪沒選中他，下一輪就讓他有優先選擇權`，一開始還沒聽懂，但懂了後就開始實做了!
 
@@ -33,13 +32,15 @@ people_names.sort(key=lambda name: worker_dict[name])
 這個的解法雖然能解決大多數情況，但他當輪志願如果還是滿人了，他還是有機會沒工作
 
 ##### 解法二 MOM✅:
-發現邏輯會產生問題，所以就有了版本二
+發現邏輯會產生問題，提供成功版本的想法
 </details>
 
 <details>
-<summary> 版本二 </summary>
-<br>
+<summary> 成功版本  </summary>
 
-### 改變每一輪的定義，`每一輪每個人都一定會拿到一個工作`
+### 改變每一輪的定義，`每一輪每個人都一定會拿到一個工作`，假設我這個志願的工作滿人了，不是換下一個人，而是換成我的下一個志願
+
+#### 中間用到的break multiple loops :
+https://stackoverflow.com/questions/189645/how-can-i-break-out-of-multiple-loops
 
 </details>
