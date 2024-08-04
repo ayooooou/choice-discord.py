@@ -24,7 +24,7 @@
   },
   "example": {
     "num": 3,
-    "option_num": 5,
+    "option_num": 4,
     "max_num": 2,
     "option_name": {
       "A": 2,
@@ -73,23 +73,19 @@
       "Grace": [
         "C",
         "D",
-        "A"
+        "A",
+        "E"
       ],
       "Heidi": [
         "B",
         "A",
         "D",
         "E"
-      ],
-      "a.uuu": [
-        "C",
-        "D",
-        "E"
       ]
     },
     "result": {
       "A": [
-        "Bob",
+        "Alice",
         "Frank"
       ],
       "B": [
@@ -97,8 +93,8 @@
       ],
       "C": [
         "Grace",
-        "Frank",
-        "Bob"
+        "Bob",
+        "Frank"
       ],
       "D": [
         "David",
