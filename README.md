@@ -40,5 +40,6 @@ people_names.sort(key=lambda name: worker_dict[name])
 <summary> 版本二 </summary>
 <br>
 
+### 改變每一輪的定義，`每一輪每個人都一定會拿到一個工作`
 
 </details>
