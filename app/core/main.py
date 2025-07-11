@@ -21,9 +21,6 @@ def write_json(data):
 
 
 def register(bot):
-    
-    
-
     # 新增
     @bot.tree.command(name="add", description="新增志願表")
     @app_commands.describe(from_name="要新增的志願表名稱", option_num="總共志願數量")
@@ -51,17 +48,16 @@ def register(bot):
     # 發布
     @bot.tree.command(name="publish", description="發布志願表")
     @app_commands.describe(from_name="要發布的志願表名稱")
-    async def publish(interaction: discord.Interaction, from_name:str):
+    async def publish(interaction: discord.Interaction, from_name: str):
         data = read_json()
         if from_name not in data:
             await interaction.response.send_message(f"志願表 `{from_name}` 不存在", ephemeral=True)
-        
+            return  # 必加 return
+
+        await interaction.response.defer()
         choice = data[from_name]["option_name"]
-        str1 = ""
-        for key in choice:
-            str1 += (f"\n- {key }: {choice[key]}人")
-        await interaction.response.send_message(f"`{from_name}`志願表已發布 分別需要: {str1} \n/fillout {from_name} 進行填寫志願表")
-    
+        str1 = "\n".join([f"- {k}: {v}人" for k, v in choice.items()])
+        await interaction.followup.send(f"`{from_name}`志願表已發布 分別需要:\n{str1}\n\n`/fillout {from_name}` 進行填寫志願表")
     
     
     #選志願
@@ -72,7 +68,7 @@ def register(bot):
         
         if from_name not in data:
             await interaction.response.send_message(f"志願表`{from_name}` 不存在", ephemeral=True)
-            
+            return # 必加 return
         user_option_num = []
         for i in data[from_name]["option_name"]:
             user_option_num.append(discord.SelectOption(label=i, value=i))
